@@ -28,6 +28,10 @@ app.get("/", (req, res) => {
 });
 
 
+app.get("/api/test",(req,res)=>{
+   res.json({message:"Backend Running Fine"});
+});
+
 
 
 
