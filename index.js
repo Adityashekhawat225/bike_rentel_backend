@@ -11,29 +11,39 @@ const OnnUser = require("./models/onnUser");
 
 const app = express();
 
-/* Middleware */
+/* ===========================
+   MIDDLEWARE
+=========================== */
+
 app.use(
   cors({
-    origin: "*",
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:3000",
+      "https://bike-rental-new-frontend.vercel.app",
+      "https://bike-rental-new-admin.vercel.app"
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
+    credentials: true
   })
 );
 
 app.use(express.json());
 
-/* Root Route */
+/* ===========================
+   ROOT ROUTE
+=========================== */
+
 app.get("/", (req, res) => {
-  res.send("Bike Rental Backend Running");
+  res.status(200).send("Bike Rental Backend Running");
 });
 
-
-app.get("/api/test",(req,res)=>{
-   res.json({message:"Backend Running Fine"});
+app.get("/api/test", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Backend Running Fine"
+  });
 });
-
-
-
 
 /* ===========================
    USERS API
@@ -44,29 +54,29 @@ app.get("/api/users", async (req, res) => {
     const data = await User.find({});
     res.status(200).json(data);
   } catch (error) {
-    res.status(500).json({ message: "Fetch error", error });
+    res.status(500).json({ message: "Fetch Error" });
   }
 });
 
 app.post("/api/users", async (req, res) => {
   try {
-    const newUser = new User(req.body);
-    await newUser.save();
-    res.status(201).json({ message: "User saved successfully" });
+    const data = new User(req.body);
+    await data.save();
+    res.status(201).json({ message: "User Added" });
   } catch (error) {
-    res.status(400).json({ message: "Save fail", error: error.message });
+    res.status(400).json({ message: "Add Fail" });
   }
 });
 
 app.put("/api/users/:id", async (req, res) => {
   try {
-    const result = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
+    const data = await User.findByIdAndUpdate(req.params.id, req.body, {
+      new: true
     });
 
-    res.status(200).json({ message: "Updated", data: result });
+    res.status(200).json(data);
   } catch (error) {
-    res.status(500).json({ message: "Update fail" });
+    res.status(500).json({ message: "Update Fail" });
   }
 });
 
@@ -75,13 +85,9 @@ app.delete("/api/users/:id", async (req, res) => {
     await User.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "Deleted" });
   } catch (error) {
-    res.status(500).json({ message: "Delete fail" });
+    res.status(500).json({ message: "Delete Fail" });
   }
 });
-
-
-
-
 
 /* ===========================
    PRODUCTS API
@@ -96,40 +102,25 @@ app.get("/api/products", async (req, res) => {
   }
 });
 
-app.get("/api/products/:id", async (req, res) => {
-  try {
-    const data = await Product.findById(req.params.id);
-
-    if (!data) {
-      return res.status(404).json({ message: "Product not found" });
-    }
-
-    res.status(200).json(data);
-  } catch (error) {
-    res.status(500).json({ message: "Server Error" });
-  }
-});
-
 app.post("/api/products", async (req, res) => {
   try {
-    const newData = new Product(req.body);
-    await newData.save();
-
-    res.status(201).json({ message: "Product added successfully" });
+    const data = new Product(req.body);
+    await data.save();
+    res.status(201).json({ message: "Product Added" });
   } catch (error) {
-    res.status(400).json({ message: "Add fail", error: error.message });
+    res.status(400).json({ message: "Add Fail" });
   }
 });
 
 app.put("/api/products/:id", async (req, res) => {
   try {
     const data = await Product.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
+      new: true
     });
 
-    res.status(200).json({ message: "Updated", data });
+    res.status(200).json(data);
   } catch (error) {
-    res.status(500).json({ message: "Update fail" });
+    res.status(500).json({ message: "Update Fail" });
   }
 });
 
@@ -138,13 +129,9 @@ app.delete("/api/products/:id", async (req, res) => {
     await Product.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "Deleted" });
   } catch (error) {
-    res.status(500).json({ message: "Delete fail" });
+    res.status(500).json({ message: "Delete Fail" });
   }
 });
-
-
-
-
 
 /* ===========================
    ORDERS API
@@ -161,27 +148,25 @@ app.get("/api/orders", async (req, res) => {
 
 app.post("/api/orders", async (req, res) => {
   try {
-    const newData = new Order(req.body);
-    await newData.save();
-
-    res.status(201).json({ message: "Order placed successfully" });
+    const data = new Order(req.body);
+    await data.save();
+    res.status(201).json({ message: "Order Added" });
   } catch (error) {
-    res.status(400).json({ message: "Order failed", error: error.message });
+    res.status(400).json({ message: "Order Fail" });
   }
 });
 
 app.put("/api/orders/:id", async (req, res) => {
   try {
-    await Order.findByIdAndUpdate(req.params.id, req.body);
-    res.status(200).json({ message: "Status Updated" });
+    const data = await Order.findByIdAndUpdate(req.params.id, req.body, {
+      new: true
+    });
+
+    res.status(200).json(data);
   } catch (error) {
-    res.status(500).json({ message: "Update fail" });
+    res.status(500).json({ message: "Update Fail" });
   }
 });
-
-
-
-
 
 /* ===========================
    LISTING API
@@ -198,24 +183,23 @@ app.get("/api/listing", async (req, res) => {
 
 app.post("/api/listing", async (req, res) => {
   try {
-    const newData = new Listing(req.body);
-    await newData.save();
-
-    res.status(201).json({ message: "Listing created successfully" });
+    const data = new Listing(req.body);
+    await data.save();
+    res.status(201).json({ message: "Listing Added" });
   } catch (error) {
-    res.status(400).json({ message: "Create fail", error: error.message });
+    res.status(400).json({ message: "Add Fail" });
   }
 });
 
 app.put("/api/listing/:id", async (req, res) => {
   try {
     const data = await Listing.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
+      new: true
     });
 
-    res.status(200).json({ message: "Updated", data });
+    res.status(200).json(data);
   } catch (error) {
-    res.status(500).json({ message: "Update fail" });
+    res.status(500).json({ message: "Update Fail" });
   }
 });
 
@@ -224,13 +208,9 @@ app.delete("/api/listing/:id", async (req, res) => {
     await Listing.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "Deleted" });
   } catch (error) {
-    res.status(500).json({ message: "Delete fail" });
+    res.status(500).json({ message: "Delete Fail" });
   }
 });
-
-
-
-
 
 /* ===========================
    ENQUIRY API
@@ -241,30 +221,29 @@ app.get("/api/enquiries", async (req, res) => {
     const data = await Enquiry.find({}).sort({ createdAt: -1 });
     res.status(200).json(data);
   } catch (error) {
-    res.status(500).json({ message: "Fetch fail" });
+    res.status(500).json([]);
   }
 });
 
 app.post("/api/enquiries", async (req, res) => {
   try {
-    const newData = new Enquiry(req.body);
-    await newData.save();
-
-    res.status(201).json({ message: "Enquiry submitted successfully" });
+    const data = new Enquiry(req.body);
+    await data.save();
+    res.status(201).json({ message: "Enquiry Added" });
   } catch (error) {
-    res.status(400).json({ message: "Submit fail", error: error.message });
+    res.status(400).json({ message: "Add Fail" });
   }
 });
 
 app.put("/api/enquiries/:id", async (req, res) => {
   try {
     const data = await Enquiry.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
+      new: true
     });
 
-    res.status(200).json({ message: "Updated", data });
+    res.status(200).json(data);
   } catch (error) {
-    res.status(500).json({ message: "Update fail" });
+    res.status(500).json({ message: "Update Fail" });
   }
 });
 
@@ -273,13 +252,12 @@ app.delete("/api/enquiries/:id", async (req, res) => {
     await Enquiry.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "Deleted" });
   } catch (error) {
-    res.status(500).json({ message: "Delete fail" });
+    res.status(500).json({ message: "Delete Fail" });
   }
 });
 
+/* ===========================
+   VERCEL EXPORT
+=========================== */
 
-
-
-
-/* Export for Vercel */
 module.exports = app;
