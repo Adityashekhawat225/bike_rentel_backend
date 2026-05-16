@@ -1,16 +1,12 @@
 const mongoose = require("mongoose");
 
-mongoose.connect(process.env.MONGO_URL, {
-  family: 4
-})
+mongoose.connect(process.env.MONGO_URL)
 .then(() => {
   console.log("MongoDB Connected Successfully");
 })
 .catch((err) => {
-  console.log("Mongo Error:", err.message);
+  console.log("Mongo Error:", err);
 });
-
-
 
 
 
